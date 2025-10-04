@@ -616,12 +616,34 @@ docker-compose logs -f worker
 - ~1000 events/second ingestion
 - ~10 validation jobs/minute
 
+### Cost Analysis (at Scale)
+
+**Assumptions**: 1,000 traces/day, avg 20 events/trace, 5MB artifacts/trace
+
+| Component | Monthly Cost | Notes |
+|-----------|-------------|-------|
+| **LLM Judge** (GPT-4o-mini) | ~$1,500 | 2K tokens/trace @ $0.15/1M input, $0.60/1M output |
+| **Storage** (S3) | ~$150 | 150GB/month @ $0.023/GB + requests |
+| **Compute** (2x m5.large) | ~$140 | AWS EC2 on-demand pricing |
+| **Database** (RDS PostgreSQL) | ~$100 | db.t3.medium |
+| **Redis/Queue** | ~$50 | ElastiCache t3.small |
+| **Network/Misc** | ~$60 | Data transfer, CloudWatch |
+| **Total** | **~$2,000/month** | **$0.067 per trace** |
+
+**Cost Optimization Options**:
+- Use open-source LLM (Llama 3 70B): **Save $1,200/month** (80% reduction)
+- Reserved instances: **Save $40/month** on compute
+- S3 Intelligent-Tiering: **Save $30/month** on storage
+- Batch judging (10 traces/request): **Save $300/month** on LLM costs
+
+**Break-even Analysis**: At current costs, system is cost-effective compared to manual review ($50-100 per trace by human experts).
+
 ### Scaling Options
 1. **Horizontal API scaling**: Add containers behind load balancer
-2. **Worker scaling**: Add more Celery workers
-3. **Database**: PostgreSQL read replicas
-4. **Storage**: Switch to AWS S3
-5. **Queue**: Redis Cluster or RabbitMQ
+2. **Worker scaling**: Add more Celery workers (linear scaling)
+3. **Database**: PostgreSQL read replicas for queries
+4. **Storage**: S3 with CloudFront CDN
+5. **Queue**: Redis Cluster or RabbitMQ for high availability
 
 ---
 
