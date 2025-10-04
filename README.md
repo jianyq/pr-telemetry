@@ -60,6 +60,8 @@ The PR Telemetry system captures:
 - 8GB+ RAM recommended
 - (Optional) OpenAI API key for real LLM evaluation
 
+> **Note**: The system works without an OpenAI API key (using mock LLM). To enable real AI evaluation, you'll need to provide your API key via a `.env` file (see step 3 below).
+
 ### 1. Start the System
 
 ```bash
@@ -97,24 +99,36 @@ This will:
 
 ### 3. Configure LLM Judge (Optional)
 
-By default, the system uses a mock LLM judge. To use real OpenAI evaluation:
+By default, the system uses a mock LLM judge. To enable real OpenAI evaluation:
 
-**Update docker-compose.yml**:
-```yaml
-# Edit docker-compose.yml, worker environment:
-OPENAI_API_KEY: your-api-key-here
-```
-
-Then restart:
+**Option A: Using .env file (Recommended for local development)**
 ```bash
+# 1. Copy the template
+cp env.example .env
+
+# 2. Edit .env and add your OpenAI API key
+# OPENAI_API_KEY=sk-your-actual-key-here
+
+# 3. Restart the worker
 docker-compose restart worker
 ```
 
-**Check LLM Status**:
+**Option B: Using environment variable (For production/CI)**
+```bash
+export OPENAI_API_KEY=sk-your-actual-key-here
+docker-compose restart worker
+```
+
+**Verify LLM is active**:
 ```bash
 docker-compose logs worker | grep "LLM Judge"
 # Should see: "Initializing LLM Judge with model: gpt-4o-mini"
 ```
+
+**Important**: 
+- ✅ The `.env` file is gitignored and will NOT be committed
+- ✅ Never commit API keys to version control
+- ✅ Use `env.example` as a template for other developers
 
 📄 See [docs/LLM_JUDGE_STATUS.md](docs/LLM_JUDGE_STATUS.md) for detailed information about the LLM integration.
 
@@ -526,6 +540,21 @@ Trace ID: trace-abc123def456
 
 ## 🔐 Security Considerations
 
+### API Key Management ⚠️
+**Important**: This project requires OpenAI API keys for LLM evaluation.
+
+✅ **Best Practices Implemented**:
+- API keys stored in `.env` file (gitignored)
+- Environment variable substitution in docker-compose
+- `env.example` template without real secrets
+- Clear documentation on secure key management
+
+⚠️ **Never**:
+- Commit `.env` file to git
+- Share API keys in public repositories
+- Hardcode secrets in docker-compose.yml
+- Include secrets in documentation
+
 ### Current Implementation (MVP)
 - ✅ Bearer token authentication
 - ✅ Idempotency keys (24h)
@@ -534,13 +563,15 @@ Trace ID: trace-abc123def456
 - ✅ Network isolation (`--network=none`)
 - ✅ Non-root user in containers
 - ✅ Security options (`no-new-privileges`, dropped capabilities)
+- ✅ Environment-based secret management
 
 ### Production Recommendations
 - 🔒 Use HTTPS/TLS
 - 🔒 JWT with short expiration
 - 🔒 Rate limiting
 - 🔒 Advanced sandboxing (gVisor, Firecracker)
-- 🔒 Secret scanning and redaction
+- 🔒 Secret management service (AWS Secrets Manager, Vault)
+- 🔒 Secret scanning in CI/CD
 - 🔒 Audit logging
 - 🔒 RBAC for multi-tenancy
 
