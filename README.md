@@ -644,54 +644,7 @@ docker-compose logs -f worker
 3. **Database**: PostgreSQL read replicas for queries
 4. **Storage**: S3 with CloudFront CDN
 5. **Queue**: Redis Cluster or RabbitMQ for high availability
-
----
-
-## 🔐 Security
-
-### Current Implementation
-
-✅ Bearer token authentication  
-✅ Docker container isolation  
-✅ Network disabled (`--network=none`)  
-✅ Resource limits (CPU, memory, PIDs)  
-✅ Non-root user in containers  
-✅ Security options (`no-new-privileges`)  
-✅ Environment-based secrets  
-
-### Production Recommendations
-
-🔒 HTTPS/TLS encryption  
-🔒 JWT with short expiration  
-🔒 Rate limiting  
-🔒 Advanced sandboxing (gVisor, Firecracker)  
-🔒 Secret management service (Vault, AWS Secrets Manager)  
-🔒 Audit logging  
-🔒 RBAC for multi-tenancy  
-
----
-
-## 📚 Documentation
-
-Detailed documentation is available in the [`docs/`](docs/) folder:
-
-### Core Documentation
-- **[STAGE1_PROJECT_PLAN.md](docs/STAGE1_PROJECT_PLAN.md)** - Complete project plan with design decisions
-- **[QUICKSTART.md](docs/QUICKSTART.md)** - Quick setup guide
-- **[SCHEMA.md](docs/SCHEMA.md)** - Complete JSON schema reference
-
-### Implementation
-- **[PROJECT_SUMMARY.md](docs/PROJECT_SUMMARY.md)** - System overview
-- **[TESTING.md](docs/TESTING.md)** - Comprehensive testing guide
-- **[GET_STARTED.md](docs/GET_STARTED.md)** - Step-by-step guide
-
-### LLM Judge
-- **[LLM_JUDGE_STATUS.md](docs/LLM_JUDGE_STATUS.md)** - Implementation status
-- **[LLM_IMPLEMENTATION_SUMMARY.md](docs/LLM_IMPLEMENTATION_SUMMARY.md)** - Technical details
-
-### Project Management
-- **[CHANGELOG.md](docs/CHANGELOG.md)** - Version history
-- **[REVIEW_AND_NEXT_STEPS.md](docs/REVIEW_AND_NEXT_STEPS.md)** - Future improvements
+ 
 
 ---
 
